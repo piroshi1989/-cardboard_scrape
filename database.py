@@ -6,8 +6,9 @@ import os
 
 class Database:
     def __init__(self):
-        # データベースファイルを/dataディレクトリに保存
-        db_path = '/data/scraping.db'
+        # データベースファイルをカレントディレクトリのdataフォルダに保存
+        os.makedirs('data', exist_ok=True)
+        db_path = os.path.join('data', 'scraping.db')
         print(f"Using database at: {db_path}")  # デバッグ用
         self.conn = sqlite3.connect(db_path)
         self.create_table()
