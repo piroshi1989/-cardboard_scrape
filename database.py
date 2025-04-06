@@ -29,6 +29,7 @@ class Database:
                     形式 TEXT,
                     厚み REAL,
                     材質 TEXT,
+                    scraped_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     データ取得日 TIMESTAMP,
                     枚数_1 REAL,
                     枚数_10 REAL,
@@ -164,7 +165,7 @@ class Database:
 
             # カラム名を指定してデータを取得
             columns_str = ', '.join(columns)
-            query = f"SELECT {columns_str} FROM scraped_data ORDER BY scraped_at DESC"
+            query = f"SELECT {columns_str} FROM scraped_data ORDER BY データ取得日 DESC"
             return pd.read_sql(query, self.conn)
         except Exception as e:
             print(f"データ取得エラー: {str(e)}")
