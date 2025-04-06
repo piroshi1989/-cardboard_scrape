@@ -147,7 +147,28 @@ class Database:
         print("Data saved successfully")  # デバッグ用
 
     def get_data(self):
-        return pd.read_sql("SELECT * FROM scraped_data ORDER BY scraped_at DESC", self.conn)
+        """データを取得"""
+        try:
+            # テーブルの存在を確認
+            cursor = self.conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='scraped_data'")
+            if not cursor.fetchone():
+                return pd.DataFrame()  # テーブルが存在しない場合は空のDataFrameを返す
+
+            # カラム名を取得
+            cursor.execute("PRAGMA table_info(scraped_data)")
+            columns = [column[1] for column in cursor.fetchall()]
+            
+            if not columns:
+                return pd.DataFrame()  # カラムが存在しない場合は空のDataFrameを返す
+
+            # カラム名を指定してデータを取得
+            columns_str = ', '.join(columns)
+            query = f"SELECT {columns_str} FROM scraped_data ORDER BY scraped_at DESC"
+            return pd.read_sql(query, self.conn)
+        except Exception as e:
+            print(f"データ取得エラー: {str(e)}")
+            return pd.DataFrame()  # エラーが発生した場合は空のDataFrameを返す
 
     def close(self):
         self.conn.close() 
